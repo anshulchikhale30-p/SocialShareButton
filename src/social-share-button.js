@@ -42,10 +42,11 @@ this.handleKeydown = null;
 this.platformBtnHandlers = [];
 this.isCopying = false;
 this.eventsAttached = false;
+this.isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
 
-    if (this.options.container) {
-      this.init();
-    }
+    if (this.isBrowser && this.options.container) {
+  this.init();
+}
   }
 
   init() {
@@ -323,20 +324,27 @@ this.eventsAttached = false;
     }, 2000);
   };
 
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(this.options.url)
-      .then(() => reset(true))
-      .catch(() => {
-        const success = this.fallbackCopy(input);
-        reset(success);
-      });
-  } else {
-    const success = this.fallbackCopy(input);
-    reset(success);
-  }
+  if (
+  typeof window !== 'undefined' &&
+  typeof navigator !== 'undefined' &&
+  navigator.clipboard &&
+  window.isSecureContext
+) {
+  navigator.clipboard.writeText(this.options.url)
+    .then(() => reset(true))
+    .catch(() => {
+      const success = this.fallbackCopy(input);
+      reset(success);
+    });
+} else {
+  const success = this.fallbackCopy(input);
+  reset(success);
+}
 }
 
   fallbackCopy(input) {
+  if (typeof document === 'undefined') return false;
+
   try {
     input.select();
     input.setSelectionRange(0, 99999);
