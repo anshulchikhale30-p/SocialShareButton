@@ -1,6 +1,16 @@
 # <!-- Don't delete it -->
 <div name="readme-top"></div>
 
+
+> ⚠️ **IMPORTANT**
+>
+> All project discussions happens on **[Discord](https://discord.com/channels/1022871757289422898/1479012884209078365)**.
+>
+> Please join the server **before opening PRs or Issues** and notify/tag the maintainer.  
+> Failing to do so may cause **delays in review**.
+>
+> **Maintainer:** @kpj2006
+
 <!-- Organization Logo -->
 <div align="center" style="display: flex; align-items: center; justify-content: center; gap: 16px;">
   <img alt="Stability Nexus" src="public/aossie_logo.svg" width="175">
