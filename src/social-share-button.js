@@ -49,6 +49,7 @@ class SocialShareButton {
     this.feedbackTimeout = null; // Track setTimeout for copy feedback reset
     this.ownsBodyLock = false; // Track if this instance owns the body overflow lock
     this.eventsAttached = false; // Guard against multiple attachEvents() calls
+    this.isDestroyed = false; // Track if instance has been destroyed (prevents async callbacks)
 
 
     if (this.options.container) {
@@ -412,6 +413,9 @@ class SocialShareButton {
       navigator.clipboard
         .writeText(this.options.url)
         .then(() => {
+          // Guard against async callback after destroy
+          if (this.isDestroyed) return;
+
           copyBtn.textContent = "Copied!";
           copyBtn.classList.add("copied");
 
@@ -426,14 +430,16 @@ class SocialShareButton {
 
           // Track feedback timeout to prevent callback after destroy
           this.feedbackTimeout = setTimeout(() => {
-            if (copyBtn) { // Safety check in case destroy() was called
-              copyBtn.textContent = "Copy";
-              copyBtn.classList.remove("copied");
-            }
+            if (this.isDestroyed || !copyBtn) return; // Safety check
+            copyBtn.textContent = "Copy";
+            copyBtn.classList.remove("copied");
             this.feedbackTimeout = null;
           }, 2000);
         })
         .catch((err) => {
+          // Guard against async callback after destroy
+          if (this.isDestroyed) return;
+
           console.error("Failed to copy:", err);
           // Fallback to manual selection
           this.fallbackCopy(input, copyBtn);
@@ -445,6 +451,9 @@ class SocialShareButton {
   }
 
   fallbackCopy(input, copyBtn) {
+    // Guard against execution after destroy
+    if (this.isDestroyed) return;
+
     try {
       input.select();
       input.setSelectionRange(0, 99999); // For mobile devices
@@ -464,10 +473,9 @@ class SocialShareButton {
 
       // Track feedback timeout to prevent callback after destroy
       this.feedbackTimeout = setTimeout(() => {
-        if (copyBtn) { // Safety check in case destroy() was called
-          copyBtn.textContent = "Copy";
-          copyBtn.classList.remove("copied");
-        }
+        if (this.isDestroyed || !copyBtn) return; // Safety check
+        copyBtn.textContent = "Copy";
+        copyBtn.classList.remove("copied");
         this.feedbackTimeout = null;
       }, 2000);
     } catch (err) {
@@ -481,15 +489,17 @@ class SocialShareButton {
 
       // Track feedback timeout to prevent callback after destroy
       this.feedbackTimeout = setTimeout(() => {
-        if (copyBtn) { // Safety check in case destroy() was called
-          copyBtn.textContent = "Copy";
-        }
+        if (this.isDestroyed || !copyBtn) return; // Safety check
+        copyBtn.textContent = "Copy";
         this.feedbackTimeout = null;
       }, 2000);
     }
   }
 
   destroy() {
+    // Mark as destroyed to prevent async callbacks
+    this.isDestroyed = true;
+
     // Remove all tracked event listeners (prevents memory leaks)
     this.removeAllListeners();
 
