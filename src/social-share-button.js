@@ -259,11 +259,11 @@ class SocialShareButton {
 
     // ESC key to close
     this.handleKeydown = (e) => {
-  if (e.key === 'Escape' && this.isModalOpen) {
-    this.closeModal();
-  }
-};
-document.addEventListener('keydown', this.handleKeydown);
+      if (e.key === "Escape" && this.isModalOpen) {
+        this.closeModal();
+      }
+    };
+    document.addEventListener("keydown", this.handleKeydown);
   }
   openModal() {
     this.isModalOpen = true;
