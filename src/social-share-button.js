@@ -42,6 +42,7 @@ class SocialShareButton {
     this.button = null;
     this.customColorMouseEnterHandler = null;
     this.customColorMouseLeaveHandler = null;
+    this.handleKeydown = null;
     this.listeners = []; // Central registry for all event listeners
 
     this.openTimeout = null;  // Track setTimeout for openModal animation
@@ -294,14 +295,13 @@ class SocialShareButton {
 
     // ESC key to close
     this.handleKeydown = (e) => {
-    // ESC key to close (document-level listener - critical for memory leak prevention)
-    const escapeHandler = (e) => {
       if (e.key === "Escape" && this.isModalOpen) {
         this.closeModal();
       }
     };
-    document.addEventListener("keydown", this.handleKeydown);
-    this.addEventListener(document, "keydown", escapeHandler);
+    if (typeof document !== "undefined") {
+       document.addEventListener("keydown", this.handleKeydown);
+     
 
     this.eventsAttached = true; // Mark as attached
   }
